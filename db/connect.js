@@ -10,7 +10,7 @@ let _db;  // "Private" variable to hold the database object
 const connect = callback => {
   if (_db) {
     return callback(null, _db);
-  }
+  }  
   mongoClient.connect(process.env.DB_CONNECT)
     .then(client => {
       _db = client.db("CSE341");
