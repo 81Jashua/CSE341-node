@@ -1,25 +1,32 @@
-const mongodb = require('../db/connect');
-const ObjectId = require('mongodb').ObjectId;
+const { ObjectId } = require('mongodb');
+const db = require('../db/connect');
 
-const getAll = async (req, res, next) => {
-  const result = await mongodb.getDb().db().collection('contacts').find();
-  result.toArray().then((lists) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists);
-  });
-};
+displayContacts = async (request, response) => {
+    try {
+        let id = "";
 
-const getSingle = async (req, res, next) => {
-  const userId = new ObjectId(req.params.id);
-  const result = await mongodb
-    .getDb()
-    .db()
-    .collection('contacts')
-    .find({ _id: userId });
-  result.toArray().then((lists) => {
-    res.setHeader('Content-Type', 'application/json');
-    res.status(200).json(lists[0]);
-  });
-};
+        if (request.query.id) id = request.query.id;
+        if (request.params.id) id = request.params.id;  // params will take precedence over query if both are present
 
-module.exports = { getAll, getSingle };
+        if (id) {
+            const contact = await db.getDb().collection("contacts").findOne({ "_id": new ObjectId(id) });
+
+            if (contact) {
+                response.send(contact);
+            } else {
+                response.status(404).send("404 Record not found");
+            }
+        } else {
+            const contacts = await db.getDb().collection("contacts").find().toArray();
+
+            response.send(contacts);
+        }
+    } catch (e) {
+        response.status(500).send(`Invalid ID: ${e.message}`);
+    }
+}
+
+
+module.exports = {
+    displayContacts,
+}

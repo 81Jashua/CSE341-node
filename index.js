@@ -1,30 +1,24 @@
+require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
-const mongodb = require('./db/connect');
-const port = process.env.PORT || 8080;
 const app = express();
 
-//const routes = require("./routes/index");
+const db = require('./db/connect');
 
-//app.use(routes);
-// app.listen(3000, () => {
-//     console.log("application listening on http://localhost:3000");
-// });
+const port = process.env.PORT || 8080;
 
-app
-  .use(bodyParser.json())
-  .use((req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    next();
-  })
-  .use('/', require('./routes'));
-  
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
-mongodb.initDb((err, mongodb) => {
-    if (err) {
-      console.log(err);
+app.use('/', require('./routes'));
+app.use('/contacts', require('./routes/contacts'));
+
+db.connect((error, database) => {
+    if (error) {
+        console.log(error);
     } else {
-      app.listen(port);
-      console.log(`Connected to DB and listening on ${port}`);
+        app.listen(port, () => {
+            console.log(`Lesson 2 app running on port ${port}, database connected.`);
+        });    
     }
-  });
+});

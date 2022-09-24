@@ -1,32 +1,35 @@
-const dotenv = require('dotenv');
-dotenv.config();
-const MongoClient = require('mongodb').MongoClient;
+// Encapsulates the database object
+// A feeble attempt to create a "Singleton" object in JavaScript
 
-let _db;
+const mongoClient = require('mongodb').MongoClient;
 
-const initDb = (callback) => {
+
+let _db;  // "Private" variable to hold the database object
+
+// Connect to the database object
+const connect = callback => {
   if (_db) {
-    console.log('Db is already initialized!');
     return callback(null, _db);
   }
-  MongoClient.connect(process.env.MONGODB_URI)
-    .then((client) => {
-      _db = client;
+  mongoClient.connect(process.env.DB_CONNECT)
+    .then(client => {
+      _db = client.db("CSE341");
       callback(null, _db);
     })
-    .catch((err) => {
+    .catch(err => {
       callback(err);
     });
 };
 
+// Get the database object
 const getDb = () => {
   if (!_db) {
-    throw Error('Db not initialized');
+    throw Error('Database not connected.');
   }
   return _db;
 };
 
 module.exports = {
-  initDb,
-  getDb,
+  connect,
+  getDb
 };
