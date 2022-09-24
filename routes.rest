@@ -10,7 +10,7 @@ GET http://localhost:8080/contacts/632dd81444f5a2eb27698d9f
 
 // PRODUCTION Deploy
 ### 
-GET https://cse341-instructor.herokuapp.com/contacts
+GET https://cse-341-w02.onrender.com/contacts
 ### 
 GET https://cse341-instructor.herokuapp.com/contacts/632dd81444f5a2eb27698d9d
 ### 
